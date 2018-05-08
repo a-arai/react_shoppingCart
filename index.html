@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>react</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        (() => {
+            function Counter(props) {
+                const url = props.counter.img;
+                return (
+                <li className="list__item" style={{background:`url(${url})`, backgroundSize:'100%'}} onClick={() =>
+                    props.countUp(props.counter)}>
+                    <div className="list__item__detail">
+                        <span className="list__item__name">{props.counter.name}/¥{props.counter.price}円</span>
+                        
+                        <span className="list__item__number"><span style={{color: 'red', fontSize: '20px', fontWeight:'bold'}}>{props.counter.count}</span>個選択</span>
+                    </div>      
+                </li>
+                );
+            }
+            function CounterList(props) {
+                const counters = props.counters.map(counter => {
+                    return (
+                        <Counter 
+                        counter={counter}
+                        key={counter.name}  
+                        countUp={props.countUp}
+                        />
+                    );
+                });
+                return (
+                    <ul className="list">
+                      {counters}  
+                    </ul>
+                )
+                
+            }
+            class App extends React.Component {
+                constructor() {
+                    super();
+                    this.state = {
+                        counters: [
+                        {name: 'アロマオイル', price: 648, count: 0, img: 'img/item1.jpg'},
+                        {name: 'マニキュア', price: 216, count: 0, img: 'img/item2.jpg'},
+                        {name: 'スキンケアセット', price: 2160, count: 0, img: 'img/item3.jpg'},
+                        {name: '石鹸', price: 540, count: 0, img: 'img/item4.jpg'},
+                        {name: 'ボディスクラブ', price: 864, count: 0, img: 'img/item5.jpg'},
+                        {name: 'お試しセット', price: 1080, count: 0, img: 'img/item6.jpg'}
+                        ],
+                        total: 0,
+                        price: 0
+                    };
+                    this.countUp = this.countUp.bind(this);
+                }
+                countUp(counter) {
+                    this.setState(prevState => {
+                        const counters = prevState.counters.map(counter => {
+                            return {name: counter.name, count: counter.count, img: counter.img, price: counter.price};
+                        });
+                        const pos = counters.map(counter => {
+                            return counter.name;
+                        }).indexOf(counter.name);
+                        counters[pos].count++;
+                        return {
+                            counters: counters,
+                            total: prevState.total + 1,
+                            price: prevState.price + counters[pos].price
+                        };
+                    });
+                }
+                render() {
+                    return (
+                        <div className="container">
+                            <CounterList
+                             counters={this.state.counters}
+                             countUp={this.countUp}
+                            />
+                            <div className="shoppingCart">カゴの中身: <span className="shoppingCart-value">{this.state.total}</span>点/合計金額:<span className="shoppingCart-value">{this.state.price}</span>円
+                            </div>
+                        </div>
+                    );
+                }
+            }
+            ReactDOM.render(
+                <App/>,
+                document.getElementById('root')
+            );
+        })();
+    </script>
+</body>
+</html>
